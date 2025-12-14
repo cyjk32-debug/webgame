@@ -8,16 +8,11 @@ let selectedTile = null;
 // 게임 상태 변수
 let score = 0;
 let level = 1;
-const MAX_LEVEL = 50; // 100 단계로 확장 적용됨
-const LEVEL_SCORE_INCREMENT = 1000; // 단계별 필요 점수
+const MAX_LEVEL = 100; // 100 단계로 확장
+const LEVEL_SCORE_INCREMENT = 500; // 단계별 필요 점수
 const SCORE_PER_TILE = 10; // 타일 한 개 제거당 얻는 점수
 let targetScore = 0;
-let isGameStarted = false; // ★★★ BGM 재생 상태 추적 변수 추가 ★★★
-
-// 보석 종류 (이모지)
-const GEMS = ['🎅', '🎅🏿', '🎄', '🎁', '🦌'];
-
-let targetScore = 0;
+let isGameStarted = false; // BGM 재생 상태 추적 변수
 
 // ★★★ 피버 모드 관련 변수 추가 ★★★
 const FEVER_MAX = 100; // 피버 게이지 최대값
@@ -28,10 +23,13 @@ let isFeverMode = false; // 피버 모드 활성화 여부
 let feverTimer = null; // 피버 모드 종료 타이머
 // ★★★ 피버 모드 관련 변수 끝 ★★★
 
+// 보석 종류 (이모지)
+const GEMS = ['🎅', '🎅🏿', '🎄', '🎁', '🦌'];
+
 // 사운드 객체
 const matchSound = new Audio('match.mp3'); 
 const levelUpSound = new Audio('levelup.mp3'); 
-const bgm = new Audio('background_music.mp3'); 
+const bgm = new Audio('background_music.mp3');
 bgm.loop = true; 
 
 // 게임 정보를 화면에 업데이트하는 함수
@@ -42,28 +40,66 @@ function updateGameInfo() {
     const messageElement = document.getElementById('game-message');
 
     if (level > MAX_LEVEL) {
-        // 게임 클리어 상태
         document.getElementById('target-score').textContent = "---";
         messageElement.textContent = "최고 레벨 달성! 게임 클리어!";
     } else {
         document.getElementById('target-score').textContent = targetScore;
         if (level === MAX_LEVEL) {
             messageElement.textContent = `최종 단계! 목표 점수: ${targetScore}`;
-        } else {
+        } else if (!isFeverMode) { // 피버 중에는 메시지를 덮어쓰지 않음
             messageElement.textContent = "";
         }
     }
 }
+
+// ★★★ 피버 관리 함수 추가 ★★★
+function updateFeverGauge() {
+    const feverBarElement = document.getElementById('fever-bar');
+    const percent = (feverGauge / FEVER_MAX) * 100;
+    feverBarElement.style.width = `${percent}%`;
+
+    if (feverGauge >= FEVER_MAX && !isFeverMode) {
+        activateFeverMode();
+    }
+}
+
+function activateFeverMode() {
+    isFeverMode = true;
+    feverGauge = FEVER_MAX;
+    document.getElementById('game-message').textContent = "🔥🔥🔥 FEVER TIME! (점수 2배) 🔥🔥🔥";
+    gameBoard.classList.add('fever-active'); 
+
+    // 피버 지속 시간 타이머 설정
+    feverTimer = setTimeout(() => {
+        deactivateFeverMode();
+    }, FEVER_DURATION);
+}
+
+function deactivateFeverMode() {
+    isFeverMode = false;
+    feverGauge = 0; 
+    clearTimeout(feverTimer);
+    document.getElementById('game-message').textContent = "";
+    gameBoard.classList.remove('fever-active');
+    updateFeverGauge();
+    updateGameInfo(); // 피버 메시지 제거 후 단계 메시지 복구
+}
+// ★★★ 피버 관리 함수 끝 ★★★
+
 
 // 1. 게임 보드 초기화 및 화면에 표시
 function initBoard() {
     score = 0;
     level = 1;
     targetScore = level * LEVEL_SCORE_INCREMENT;
-    updateGameInfo(); 
+
+    // 피버 상태 초기화
+    feverGauge = 0;
+    isFeverMode = false;
+    clearTimeout(feverTimer);
     
-    // ★★★ BGM 자동 재생 시도 로직 제거 (initBoard에서는 실행하지 않음) ★★★
-    // bgm.play().catch(e => console.log("BGM 자동 재생 실패...")); 
+    updateGameInfo(); 
+    updateFeverGauge();
     
     gameBoard.style.gridTemplateColumns = `repeat(${BOARD_SIZE}, 50px)`;
     gameBoard.innerHTML = ''; 
@@ -92,7 +128,7 @@ function createTile(r, c, gemType) {
 
 // 2. 타일 클릭 처리 (선택 및 교환)
 function handleTileClick(event) {
-    // ★★★ BGM 강제 재생 로직 추가 ★★★
+    // ★★★ BGM 강제 재생 로직 추가 (첫 클릭 시) ★★★
     if (!isGameStarted) {
         bgm.play().catch(e => console.log("BGM 재생 실패."));
         isGameStarted = true;
@@ -103,7 +139,7 @@ function handleTileClick(event) {
     const r1 = parseInt(clickedTile.dataset.row);
     const c1 = parseInt(clickedTile.dataset.col);
 
-    if (level > MAX_LEVEL) return; // 게임 클리어 시 조작 방지
+    if (level > MAX_LEVEL) return; 
 
     if (selectedTile === null) {
         selectedTile = clickedTile;
@@ -113,7 +149,6 @@ function handleTileClick(event) {
         const r2 = parseInt(selectedTile.dataset.row);
         const c2 = parseInt(selectedTile.dataset.col);
 
-        // 인접한 타일인지 확인
         const isAdjacent = Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
 
         if (isAdjacent) {
@@ -125,7 +160,7 @@ function handleTileClick(event) {
     }
 }
 
-// 3. 타일 교환 로직 (변경 없음)
+// 3. 타일 교환 로직
 function trySwap(tile1, tile2) {
     const r1 = parseInt(tile1.dataset.row);
     const c1 = parseInt(tile1.dataset.col);
@@ -142,7 +177,6 @@ function trySwap(tile1, tile2) {
         }, 100); 
     } else {
         [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
-        console.log("매치가 발생하지 않아 되돌립니다.");
     }
 }
 
@@ -182,7 +216,7 @@ function checkLevelUp() {
     }
 }
 
-// 6. 매치 제거 및 보드 업데이트 (변경 없음)
+// 6. 매치 제거 및 보드 업데이트 (점수 및 효과 포함)
 function handleMatches() {
     if (level > MAX_LEVEL) return; 
 
@@ -194,6 +228,7 @@ function handleMatches() {
             const type = board[r][c];
             if (type === -1) continue; 
 
+            // 가로 매치
             let hMatch = [];
             for (let i = c; i < BOARD_SIZE && board[r][i] === type; i++) {
                 hMatch.push({r, c: i});
@@ -203,6 +238,7 @@ function handleMatches() {
                 hasMatch = true;
             }
 
+            // 세로 매치
             let vMatch = [];
             for (let i = r; i < BOARD_SIZE && board[i][c] === type; i++) {
                 vMatch.push({r: i, c});
@@ -217,8 +253,25 @@ function handleMatches() {
     if (hasMatch) {
         matchSound.play().catch(e => console.log("매치 사운드 재생 실패:", e));
         
-        const pointsGained = tilesToClear.size * SCORE_PER_TILE;
+        let pointsGained = tilesToClear.size * SCORE_PER_TILE;
+
+        // ★★★ 피버 모드 시 점수 2배 적용 ★★★
+        if (isFeverMode) {
+            pointsGained *= 2; 
+        }
         score += pointsGained;
+
+        // ★★★ 피버 게이지 증가 로직 ★★★
+        if (!isFeverMode) {
+            feverGauge += tilesToClear.size * FEVER_INCREMENT;
+            if (feverGauge > FEVER_MAX) {
+                feverGauge = FEVER_MAX;
+            }
+            updateFeverGauge();
+        }
+        // ★★★ 피버 게이지 증가 로직 끝 ★★★
+
+
         updateGameInfo(); 
 
         tilesToClear.forEach(key => {
@@ -261,70 +314,6 @@ function dropAndRefill() {
         }
     }
 }
-// ... (updateGameInfo 함수 아래에 추가)
 
-// 피버 게이지 바를 화면에 업데이트하는 함수
-function updateFeverGauge() {
-    const feverBarElement = document.getElementById('fever-bar');
-    const percent = (feverGauge / FEVER_MAX) * 100;
-    feverBarElement.style.width = `${percent}%`;
-
-    // 게이지가 가득 차면 깜빡이거나 다른 시각적 효과를 줄 수 있습니다.
-    if (feverGauge >= FEVER_MAX && !isFeverMode) {
-        activateFeverMode();
-    }
-}
-
-// 피버 모드 활성화
-function activateFeverMode() {
-    isFeverMode = true;
-    feverGauge = FEVER_MAX; // 게이지 가득 채움
-    document.getElementById('game-message').textContent = "🔥🔥🔥 FEVER TIME! (점수 2배) 🔥🔥🔥";
-    gameBoard.classList.add('fever-active'); // 시각 효과 적용
-
-    // BGM이 있다면, BGM을 피버 버전으로 바꾸는 코드를 여기에 넣을 수 있습니다.
-    // (예: bgm.volume = 0.5; feverBgm.play();)
-
-    // 피버 지속 시간 타이머 설정
-    feverTimer = setTimeout(() => {
-        deactivateFeverMode();
-    }, FEVER_DURATION);
-}
-
-// 피버 모드 비활성화
-function deactivateFeverMode() {
-    isFeverMode = false;
-    feverGauge = 0; // 게이지 초기화
-    clearTimeout(feverTimer);
-    document.getElementById('game-message').textContent = "";
-    gameBoard.classList.remove('fever-active'); // 시각 효과 제거
-    updateFeverGauge();
-    
-    // (예: bgm.volume = 1.0; feverBgm.pause();)
-}
-
-// ... (initBoard 함수에서 feverGauge 초기화 로직 추가)
-function initBoard() {
-    score = 0;
-    level = 1;
-    targetScore = level * LEVEL_SCORE_INCREMENT;
-    
-    // ★★★ 초기화 시 피버 게이지도 초기화 ★★★
-    feverGauge = 0;
-    isFeverMode = false;
-    clearTimeout(feverTimer);
-    // ------------------------------------
-
-    updateGameInfo(); 
-    updateFeverGauge(); // 게이지 바 초기화
-    
-    // ... (기존 BGM 재생 로직) ...
-}
 // 게임 시작
 initBoard();
-
-
-
-
-
-
