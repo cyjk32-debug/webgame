@@ -7,15 +7,22 @@
     <h1>크리스마스 퍼즐게임</h1>
     <link rel="stylesheet" href="style.css">
 </head>
-    <div id="game-info" style="margin-bottom: 15px; text-align: center;">
-        <p>점수: <span id="score" style="font-weight: bold; color: blue;">0</span></p>
-        <p>
-            단계: <span id="level" style="font-weight: bold; color: green;">1</span> / 10
-        </p>
-        <p>다음 단계 목표: <span id="target-score" style="font-weight: bold; color: red;">500</span></p>
-        <div id="game-message" style="color: red; font-size: 1.1em; margin-top: 5px;"></div>
+<div id="game-info">
+    <h2>점수: <span id="score">0</span></h2>
+    <div id="fever-container">
+        <p>FEVER</p>
+        <div id="fever-bar-background">
+            <div id="fever-bar" style="width: 0%;"></div>
+        </div>
     </div>
-
+    <p>
+        단계: <span id="level" style="font-weight: bold; color: green;">1</span> / 100
+    </p>
+    <p>
+        다음 목표: <span id="target-score">500</span>
+    </p>
+    <p id="game-message" style="font-weight: bold; color: red;"></p>
+</div>
     <div id="game-board">
         </div>
 
@@ -23,5 +30,6 @@
 </body>
 
 </html>
+
 
 
