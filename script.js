@@ -1,4 +1,4 @@
-const BOARD_SIZE = 16; // 보드의 크기 (8x8)
+const BOARD_SIZE = 8; // 보드의 크기 (8x8)
 const NUM_GEMS = 5; // 보석 종류 수 (0부터 4까지)
 const gameBoard = document.getElementById('game-board');
 
@@ -253,4 +253,5 @@ function dropAndRefill() {
 
 // 게임 시작
 initBoard();
+
 
