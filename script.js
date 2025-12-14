@@ -27,7 +27,7 @@ let feverTimer = null; // 피버 모드 종료 타이머
 const GEMS = ['🎅', '🎅🏿', '🎄', '🎁', '🦌'];
 
 // 사운드 객체
-const matchSound = new Audio('match.mp3'); 
+const matchSound = new Audio('1214.mp3'); 
 const levelUpSound = new Audio('levelup.mp3'); 
 const bgm = new Audio('background_music.mp3');
 bgm.loop = true; 
@@ -317,3 +317,4 @@ function dropAndRefill() {
 
 // 게임 시작
 initBoard();
+
