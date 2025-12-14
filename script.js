@@ -8,23 +8,19 @@ let selectedTile = null;
 // 게임 상태 변수
 let score = 0;
 let level = 1;
-const MAX_LEVEL = 10;
+const MAX_LEVEL = 100; // ★★★ 100 단계로 확장 ★★★
 const LEVEL_SCORE_INCREMENT = 500; // 단계별 필요 점수
 const SCORE_PER_TILE = 10; // 타일 한 개 제거당 얻는 점수
 let targetScore = 0;
 
 // 보석 종류 (이모지)
-const GEMS = ['🎅', '🤶', '🤶🏿', '🧦', '🎄'];
+const GEMS = ['🎅', '🎅🏿', '🎄', '🎁', '🦌'];
 
 // 사운드 객체
 const matchSound = new Audio('match.mp3'); 
-// 💡 주의: 'match.mp3' 파일이 같은 폴더에 있어야 사운드가 재생됩니다.
-
-// ★★★ 추가된 승리 사운드 객체 ★★★
 const levelUpSound = new Audio('levelup.mp3'); 
-// 💡 주의: 'levelup.mp3' 파일이 이 코드가 있는 폴더에 있어야 합니다! 
-// 사운드 파일을 구할 수 없는 경우 이 줄을 주석 처리하거나 다른 URL을 사용해야 합니다.
-// ★★★ 추가된 승리 사운드 객체 끝 ★★★
+const bgm = new Audio('background_music.mp3'); // ★★★ BGM 객체 추가 ★★★
+bgm.loop = true; // BGM 반복 재생 설정
 
 // 게임 정보를 화면에 업데이트하는 함수
 function updateGameInfo() {
@@ -53,6 +49,11 @@ function initBoard() {
     level = 1;
     targetScore = level * LEVEL_SCORE_INCREMENT;
     updateGameInfo(); 
+    
+    // ★★★ BGM 재생 시도 ★★★
+    // (브라우저 정책상 사용자 상호작용 후 재생될 수 있습니다.)
+    bgm.play().catch(e => console.log("BGM 자동 재생 실패. 사용자의 상호 작용이 필요합니다.", e));
+    // ★★★ BGM 재생 시도 끝 ★★★
 
     gameBoard.style.gridTemplateColumns = `repeat(${BOARD_SIZE}, 50px)`;
     gameBoard.innerHTML = ''; 
@@ -153,9 +154,8 @@ function checkMatch(currentBoard, r, c) {
 // 5. 단계 상승 확인
 function checkLevelUp() {
     if (level < MAX_LEVEL && score >= targetScore) {
-        // ★★★ 승리 사운드 재생 ★★★
+        // 승리 사운드 재생
         levelUpSound.play().catch(e => console.log("승리 사운드 재생 실패:", e));
-        // ★★★ 승리 사운드 재생 끝 ★★★
         
         level++;
         targetScore = level * LEVEL_SCORE_INCREMENT; 
@@ -163,17 +163,17 @@ function checkLevelUp() {
         updateGameInfo();
         handleMatches(); 
     } else if (level === MAX_LEVEL && score >= targetScore) {
-        // ★★★ 최종 승리 사운드 재생 ★★★
+        // 최종 승리 사운드 재생
         levelUpSound.play().catch(e => console.log("최종 승리 사운드 재생 실패:", e));
-        // ★★★ 최종 승리 사운드 재생 끝 ★★★
         
         level++; 
-        alert("🎊 최고 레벨(10단계) 목표 점수 달성! 게임 클리어!");
+        alert("🎊 최고 레벨 달성! 게임 클리어!");
         updateGameInfo();
     } else {
          handleMatches(); 
     }
 }
+
 // 6. 매치 제거 및 보드 업데이트 (점수 및 효과 포함)
 function handleMatches() {
     if (level > MAX_LEVEL) return; 
@@ -210,8 +210,8 @@ function handleMatches() {
     }
 
     if (hasMatch) {
-        // 사운드 재생
-        matchSound.play().catch(e => console.log("사운드 재생 실패:", e));
+        // 매치 사운드 재생
+        matchSound.play().catch(e => console.log("매치 사운드 재생 실패:", e));
         
         // 점수 획득
         const pointsGained = tilesToClear.size * SCORE_PER_TILE;
@@ -263,5 +263,4 @@ function dropAndRefill() {
 }
 
 // 게임 시작
-
 initBoard();
