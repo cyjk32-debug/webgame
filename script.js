@@ -8,10 +8,11 @@ let selectedTile = null;
 // 게임 상태 변수
 let score = 0;
 let level = 1;
-const MAX_LEVEL = 100; // ★★★ 100 단계로 확장 ★★★
+const MAX_LEVEL = 100; // 100 단계로 확장 적용됨
 const LEVEL_SCORE_INCREMENT = 500; // 단계별 필요 점수
 const SCORE_PER_TILE = 10; // 타일 한 개 제거당 얻는 점수
 let targetScore = 0;
+let isGameStarted = false; // ★★★ BGM 재생 상태 추적 변수 추가 ★★★
 
 // 보석 종류 (이모지)
 const GEMS = ['🎅', '🎅🏿', '🎄', '🎁', '🦌'];
@@ -19,8 +20,8 @@ const GEMS = ['🎅', '🎅🏿', '🎄', '🎁', '🦌'];
 // 사운드 객체
 const matchSound = new Audio('match.mp3'); 
 const levelUpSound = new Audio('levelup.mp3'); 
-const bgm = new Audio('background_music.mp3'); // ★★★ BGM 객체 추가 ★★★
-bgm.loop = true; // BGM 반복 재생 설정
+const bgm = new Audio('background_music.mp3'); 
+bgm.loop = true; 
 
 // 게임 정보를 화면에 업데이트하는 함수
 function updateGameInfo() {
@@ -50,11 +51,9 @@ function initBoard() {
     targetScore = level * LEVEL_SCORE_INCREMENT;
     updateGameInfo(); 
     
-    // ★★★ BGM 재생 시도 ★★★
-    // (브라우저 정책상 사용자 상호작용 후 재생될 수 있습니다.)
-    bgm.play().catch(e => console.log("BGM 자동 재생 실패. 사용자의 상호 작용이 필요합니다.", e));
-    // ★★★ BGM 재생 시도 끝 ★★★
-
+    // ★★★ BGM 자동 재생 시도 로직 제거 (initBoard에서는 실행하지 않음) ★★★
+    // bgm.play().catch(e => console.log("BGM 자동 재생 실패...")); 
+    
     gameBoard.style.gridTemplateColumns = `repeat(${BOARD_SIZE}, 50px)`;
     gameBoard.innerHTML = ''; 
 
@@ -82,6 +81,13 @@ function createTile(r, c, gemType) {
 
 // 2. 타일 클릭 처리 (선택 및 교환)
 function handleTileClick(event) {
+    // ★★★ BGM 강제 재생 로직 추가 ★★★
+    if (!isGameStarted) {
+        bgm.play().catch(e => console.log("BGM 재생 실패."));
+        isGameStarted = true;
+    }
+    // ★★★ BGM 강제 재생 로직 끝 ★★★
+
     const clickedTile = event.target;
     const r1 = parseInt(clickedTile.dataset.row);
     const c1 = parseInt(clickedTile.dataset.col);
@@ -108,42 +114,35 @@ function handleTileClick(event) {
     }
 }
 
-// 3. 타일 교환 로직
+// 3. 타일 교환 로직 (변경 없음)
 function trySwap(tile1, tile2) {
     const r1 = parseInt(tile1.dataset.row);
     const c1 = parseInt(tile1.dataset.col);
     const r2 = parseInt(tile2.dataset.row);
     const c2 = parseInt(tile2.dataset.col);
 
-    // 모델(board 배열)에서 값 교환
     [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
 
-    // 매치가 발생했는지 확인
     if (checkMatch(board, r1, c1) || checkMatch(board, r2, c2)) {
-        // 매치가 성공하면 시각적으로도 교환
         [tile1.textContent, tile2.textContent] = [tile2.textContent, tile1.textContent];
         
-        // 매치 제거 및 보드 업데이트
         setTimeout(() => {
             handleMatches();
         }, 100); 
     } else {
-        // 매치가 없으면 모델(board 배열)을 다시 원래대로 되돌림
         [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
         console.log("매치가 발생하지 않아 되돌립니다.");
     }
 }
 
-// 4. 매치 확인
+// 4. 매치 확인 (변경 없음)
 function checkMatch(currentBoard, r, c) {
     const type = currentBoard[r][c];
     
-    // 가로 매치 확인
     let horizontal = 1;
     for (let i = c + 1; i < BOARD_SIZE && currentBoard[r][i] === type; i++) horizontal++;
     for (let i = c - 1; i >= 0 && currentBoard[r][i] === type; i--) horizontal++;
 
-    // 세로 매치 확인
     let vertical = 1;
     for (let i = r + 1; i < BOARD_SIZE && currentBoard[i][c] === type; i++) vertical++;
     for (let i = r - 1; i >= 0 && currentBoard[i][c] === type; i--) vertical++;
@@ -151,10 +150,9 @@ function checkMatch(currentBoard, r, c) {
     return horizontal >= 3 || vertical >= 3;
 }
 
-// 5. 단계 상승 확인
+// 5. 단계 상승 확인 (변경 없음)
 function checkLevelUp() {
     if (level < MAX_LEVEL && score >= targetScore) {
-        // 승리 사운드 재생
         levelUpSound.play().catch(e => console.log("승리 사운드 재생 실패:", e));
         
         level++;
@@ -163,7 +161,6 @@ function checkLevelUp() {
         updateGameInfo();
         handleMatches(); 
     } else if (level === MAX_LEVEL && score >= targetScore) {
-        // 최종 승리 사운드 재생
         levelUpSound.play().catch(e => console.log("최종 승리 사운드 재생 실패:", e));
         
         level++; 
@@ -174,20 +171,18 @@ function checkLevelUp() {
     }
 }
 
-// 6. 매치 제거 및 보드 업데이트 (점수 및 효과 포함)
+// 6. 매치 제거 및 보드 업데이트 (변경 없음)
 function handleMatches() {
     if (level > MAX_LEVEL) return; 
 
     let tilesToClear = new Set(); 
     let hasMatch = false;
 
-    // 전체 보드를 순회하며 매치 찾기
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             const type = board[r][c];
             if (type === -1) continue; 
 
-            // 가로 매치 찾기
             let hMatch = [];
             for (let i = c; i < BOARD_SIZE && board[r][i] === type; i++) {
                 hMatch.push({r, c: i});
@@ -197,7 +192,6 @@ function handleMatches() {
                 hasMatch = true;
             }
 
-            // 세로 매치 찾기
             let vMatch = [];
             for (let i = r; i < BOARD_SIZE && board[i][c] === type; i++) {
                 vMatch.push({r: i, c});
@@ -210,25 +204,21 @@ function handleMatches() {
     }
 
     if (hasMatch) {
-        // 매치 사운드 재생
         matchSound.play().catch(e => console.log("매치 사운드 재생 실패:", e));
         
-        // 점수 획득
         const pointsGained = tilesToClear.size * SCORE_PER_TILE;
         score += pointsGained;
         updateGameInfo(); 
 
-        // 1. DOM에서 매치된 타일 제거 시각화 (애니메이션 적용)
         tilesToClear.forEach(key => {
             const [r, c] = key.split(',').map(Number);
             const tileElement = gameBoard.querySelector(`[data-row="${r}"][data-col="${c}"]`);
             if (tileElement) {
-                tileElement.classList.add('clearing'); // 애니메이션 클래스 추가
+                tileElement.classList.add('clearing'); 
                 board[r][c] = -1; 
             }
         });
 
-        // 2. 타일 떨어뜨리기 및 빈칸 채우기 (애니메이션 후 실행)
         setTimeout(() => {
             dropAndRefill();
             checkLevelUp(); 
@@ -236,7 +226,7 @@ function handleMatches() {
     }
 }
 
-// 7. 타일 떨어뜨리기 및 빈칸 채우기
+// 7. 타일 떨어뜨리기 및 빈칸 채우기 (변경 없음)
 function dropAndRefill() {
     let tilesNeedUpdate = false;
     for (let r = 0; r < BOARD_SIZE; r++) {
@@ -248,12 +238,11 @@ function dropAndRefill() {
                 board[r][c] = newGemType;
                 
                 if (tileElement) {
-                    tileElement.classList.remove('clearing'); // 클래스 제거
+                    tileElement.classList.remove('clearing'); 
                     tileElement.textContent = GEMS[newGemType];
                 }
                 tilesNeedUpdate = true;
             } else {
-                // 빈칸이 아니어도 clearing 클래스가 남아있을 수 있으므로 제거
                 if(tileElement) {
                    tileElement.classList.remove('clearing');
                 }
