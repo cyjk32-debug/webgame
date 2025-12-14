@@ -17,6 +17,17 @@ let isGameStarted = false; // ★★★ BGM 재생 상태 추적 변수 추가 �
 // 보석 종류 (이모지)
 const GEMS = ['🎅', '🎅🏿', '🎄', '🎁', '🦌'];
 
+let targetScore = 0;
+
+// ★★★ 피버 모드 관련 변수 추가 ★★★
+const FEVER_MAX = 100; // 피버 게이지 최대값
+const FEVER_INCREMENT = 10; // 매치된 타일당 게이지 증가량
+const FEVER_DURATION = 10000; // 피버 지속 시간 (10초)
+let feverGauge = 0; // 현재 피버 게이지
+let isFeverMode = false; // 피버 모드 활성화 여부
+let feverTimer = null; // 피버 모드 종료 타이머
+// ★★★ 피버 모드 관련 변수 끝 ★★★
+
 // 사운드 객체
 const matchSound = new Audio('match.mp3'); 
 const levelUpSound = new Audio('levelup.mp3'); 
@@ -253,6 +264,7 @@ function dropAndRefill() {
 
 // 게임 시작
 initBoard();
+
 
 
 
