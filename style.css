@@ -1,33 +1,43 @@
-/* 1. Body 스타일: 화면 전체를 사용하고 내용을 중앙에 배치 */
 body {
     display: flex;
-    flex-direction: column; /* 요소를 세로로 배열 */
-    align-items: center;    /* 수평 중앙 정렬 */
-    justify-content: center; /* 수직 중앙 정렬 */
-    min-height: 100vh;      /* 뷰포트 전체 높이 사용 */
-    margin: 0;
-    /* (나머지 배경 스타일 유지) */
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
 }
 
-/* 2. 게임 보드 컨테이너 스타일 */
 #game-board {
-    /* 고정된 크기 대신, 뷰포트 크기에 반응하도록 변경 */
-    width: 90vmin;  /* 뷰포트의 더 작은 차원(높이 또는 너비)의 90% 사용 */
-    height: 90vmin;
-    /* grid-template-columns는 JavaScript에서 제어되므로 변경하지 않습니다. */
-    
-    /* 화면 크기에 맞춰 보드 크기가 유연하게 조정됩니다. */
-    max-width: 400px; /* 데스크톱에서 너무 커지는 것을 방지 (선택 사항) */
-    max-height: 400px;
+    display: grid;
+    /* JS에서 grid-template-columns 설정 */
+    border: 3px solid #333;
+    background-color: #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* 3. 타일 크기 조정 (선택 사항) */
-/* 타일 크기는 JS가 설정한 그리드 레이아웃에 의해 결정되므로, 
-   크기가 적절하지 않으면 JS 코드의 50px 설정을 조정해야 할 수 있습니다. */
 .tile {
-    /* (기존 스타일 유지) */
-    font-size: 24px; /* 모바일에서 잘 보이도록 글꼴 크기 조정 */
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    cursor: pointer;
+    border: 1px solid #aaa;
+    transition: transform 0.1s;
+    user-select: none;
+    background-color: white;
 }
+
+.tile:hover {
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.selected {
+    border: 3px solid red; /* 선택된 타일 표시 */
+    box-shadow: 0 0 15px red;
+    z-index: 10;
+}
+
 /* ★★★ 추가된 애니메이션 클래스 ★★★ */
 .clearing {
     animation: fadeOut 0.3s ease-in forwards;
@@ -42,5 +52,4 @@ body {
         opacity: 0;
         transform: scale(0.1);
     }
-
 }
