@@ -53,3 +53,37 @@ body {
         transform: scale(0.1);
     }
 }
+/* 피버 게이지 컨테이너 */
+#fever-container {
+    width: 90%;
+    margin: 10px auto;
+    text-align: center;
+}
+
+#fever-container p {
+    margin: 5px 0;
+    font-weight: bold;
+    color: orange;
+}
+
+#fever-bar-background {
+    width: 100%;
+    height: 15px;
+    background-color: #333;
+    border: 1px solid #ff7f00;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#fever-bar {
+    height: 100%;
+    background-color: #ff7f00; /* 주황색 피버 색상 */
+    transition: width 0.3s ease; /* 부드러운 게이지 변화 */
+}
+
+/* 피버 모드 활성화 시 전체 보드에 시각적 효과 추가 */
+.fever-active {
+    /* 예시: 보드 주변에 반짝이는 테두리 */
+    box-shadow: 0 0 20px 5px rgba(255, 127, 0, 0.8); 
+    border-color: #ff7f00;
+}
