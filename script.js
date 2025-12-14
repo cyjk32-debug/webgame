@@ -8,7 +8,7 @@ let selectedTile = null;
 // 게임 상태 변수
 let score = 0;
 let level = 1;
-const MAX_LEVEL = 100; // 100 단계로 확장 적용됨
+const MAX_LEVEL = 50; // 100 단계로 확장 적용됨
 const LEVEL_SCORE_INCREMENT = 1000; // 단계별 필요 점수
 const SCORE_PER_TILE = 10; // 타일 한 개 제거당 얻는 점수
 let targetScore = 0;
@@ -253,6 +253,7 @@ function dropAndRefill() {
 
 // 게임 시작
 initBoard();
+
 
 
 
