@@ -9,7 +9,7 @@ let selectedTile = null;
 let score = 0;
 let level = 1;
 const MAX_LEVEL = 100; // 100 단계로 확장 적용됨
-const LEVEL_SCORE_INCREMENT = 500; // 단계별 필요 점수
+const LEVEL_SCORE_INCREMENT = 1000; // 단계별 필요 점수
 const SCORE_PER_TILE = 10; // 타일 한 개 제거당 얻는 점수
 let targetScore = 0;
 let isGameStarted = false; // ★★★ BGM 재생 상태 추적 변수 추가 ★★★
@@ -253,5 +253,6 @@ function dropAndRefill() {
 
 // 게임 시작
 initBoard();
+
 
 
