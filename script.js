@@ -14,7 +14,7 @@ const SCORE_PER_TILE = 10; // 타일 한 개 제거당 얻는 점수
 let targetScore = 0;
 
 // 보석 종류 (이모지)
-const GEMS = ['💎', '✨', '💖', '🌟', '🍀'];
+const GEMS = ['🎅', '🤶', '🤶🏿', '🧦', '🎄'];
 
 // 사운드 객체
 const matchSound = new Audio('match.mp3'); 
@@ -263,4 +263,5 @@ function dropAndRefill() {
 }
 
 // 게임 시작
+
 initBoard();
