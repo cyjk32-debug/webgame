@@ -261,9 +261,68 @@ function dropAndRefill() {
         }
     }
 }
+// ... (updateGameInfo 함수 아래에 추가)
 
+// 피버 게이지 바를 화면에 업데이트하는 함수
+function updateFeverGauge() {
+    const feverBarElement = document.getElementById('fever-bar');
+    const percent = (feverGauge / FEVER_MAX) * 100;
+    feverBarElement.style.width = `${percent}%`;
+
+    // 게이지가 가득 차면 깜빡이거나 다른 시각적 효과를 줄 수 있습니다.
+    if (feverGauge >= FEVER_MAX && !isFeverMode) {
+        activateFeverMode();
+    }
+}
+
+// 피버 모드 활성화
+function activateFeverMode() {
+    isFeverMode = true;
+    feverGauge = FEVER_MAX; // 게이지 가득 채움
+    document.getElementById('game-message').textContent = "🔥🔥🔥 FEVER TIME! (점수 2배) 🔥🔥🔥";
+    gameBoard.classList.add('fever-active'); // 시각 효과 적용
+
+    // BGM이 있다면, BGM을 피버 버전으로 바꾸는 코드를 여기에 넣을 수 있습니다.
+    // (예: bgm.volume = 0.5; feverBgm.play();)
+
+    // 피버 지속 시간 타이머 설정
+    feverTimer = setTimeout(() => {
+        deactivateFeverMode();
+    }, FEVER_DURATION);
+}
+
+// 피버 모드 비활성화
+function deactivateFeverMode() {
+    isFeverMode = false;
+    feverGauge = 0; // 게이지 초기화
+    clearTimeout(feverTimer);
+    document.getElementById('game-message').textContent = "";
+    gameBoard.classList.remove('fever-active'); // 시각 효과 제거
+    updateFeverGauge();
+    
+    // (예: bgm.volume = 1.0; feverBgm.pause();)
+}
+
+// ... (initBoard 함수에서 feverGauge 초기화 로직 추가)
+function initBoard() {
+    score = 0;
+    level = 1;
+    targetScore = level * LEVEL_SCORE_INCREMENT;
+    
+    // ★★★ 초기화 시 피버 게이지도 초기화 ★★★
+    feverGauge = 0;
+    isFeverMode = false;
+    clearTimeout(feverTimer);
+    // ------------------------------------
+
+    updateGameInfo(); 
+    updateFeverGauge(); // 게이지 바 초기화
+    
+    // ... (기존 BGM 재생 로직) ...
+}
 // 게임 시작
 initBoard();
+
 
 
 
