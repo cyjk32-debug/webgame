@@ -3,33 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>크리스마스 퍼즐 게임</title>
-    <h1>크리스마스 퍼즐게임</h1>
+    <title>크리스마스 3매치 퍼즐</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<div id="game-info">
-    <h2>점수: <span id="score">0</span></h2>
-    <div id="fever-container">
-        <p>FEVER</p>
-        <div id="fever-bar-background">
-            <div id="fever-bar" style="width: 0%;"></div>
+<body>
+
+    <h1>크리스마스 3매치 퍼즐</h1>
+
+    <div id="game-info">
+        <h2>점수: <span id="score">0</span></h2>
+        
+        <div id="fever-container">
+            <p>FEVER</p>
+            <div id="fever-bar-background">
+                <div id="fever-bar" style="width: 0%;"></div>
+            </div>
         </div>
+        <p>
+            단계: <span id="level" style="font-weight: bold; color: green;">1</span> / 100
+        </p>
+        <p>
+            다음 목표: <span id="target-score">500</span>
+        </p>
+        <p id="game-message" style="font-weight: bold; color: red;"></p>
     </div>
-    <p>
-        단계: <span id="level" style="font-weight: bold; color: green;">1</span> / 100
-    </p>
-    <p>
-        다음 목표: <span id="target-score">500</span>
-    </p>
-    <p id="game-message" style="font-weight: bold; color: red;"></p>
-</div>
+
     <div id="game-board">
         </div>
 
     <script src="script.js"></script>
 </body>
-
 </html>
-
-
-
